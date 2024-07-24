@@ -13,16 +13,7 @@ model User {
     name   String?
     role   Role     @default(USER)
     posts  Post[]
-    auth   UserAuth @relation(fields: [authid], references: [id])
-    authid Int @unique
-}
-
-model UserAuth {
-    id   Int   @id @default(autoincrement())
-    user User?
-
     passwordHash String
-    salt         String
 }
 
 model Post {
@@ -33,6 +24,18 @@ model Post {
     published Boolean  @default(false)
     author    User     @relation(fields: [authorId], references: [id])
     authorId  Int
+    comments Comment[]
+
+}
+
+model Comment {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    published Boolean  @default(false)
+    authorName    String     @default("Anonymous")
+    post   Post @relation(fields: [postId], references: [id])
+    postId Int
 }
 
 enum Role {
