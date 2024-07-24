@@ -3,11 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const bcrypt = require('bcryptjs');
-const asyncHandler = require('express-async-handler');
-const jwt = require('jsonwebtoken');
-const { body, validationResult } = require('express-validator');
-
+require('./auth/passport')
 const commentsRouter = require('./routes/comments');
 const postRouter = require('./routes/posts')
 const authRouter = require('./routes/auth');
@@ -43,7 +39,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json('error');
 });
 
 module.exports = app;

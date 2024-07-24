@@ -48,13 +48,10 @@ authController.register = [
       email: req.body.email,
       passwordHash: hashedPassword,
     };
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: userObj,
     });
-    res.json({
-      message: "User registered successfully",
-      token: generateAccessToken(user.email),
-    });
+    res.status(201).json('User created');
   }),
 ];
 
