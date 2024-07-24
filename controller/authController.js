@@ -1,12 +1,11 @@
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
-const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const prisma = require("./prismaClient");
-const {generateAccessToken,authenticateToken} = require('../auth/jwt')
+const { generateAccessToken } = require("../auth/jwt");
 require("dotenv").config();
 
-authController = {};
+const authController = {};
 authController.register = [
   body("username")
     .trim()
@@ -40,29 +39,29 @@ authController.register = [
       return;
     }
 
-    const password = req.body.password;
-
-    bcrypt.hash(password, process.env.SALT, async (err, hash) => {
-      const userObj = {
-        email: req.body.email,
-        name: req.body.username,
-        passwordHash: hash,
-      };
-      const user = await prisma.userAuth.create({
-        data: userObj,
-      });
-      res.json({
-        message: "User registered successfully",
-        token: generateAccessToken(user.email),
-      });
+    const hashedPassword = await bcrypt.hash(
+      req.body.password,
+      +process.env.SALT
+    );
+    const userObj = {
+      name: req.body.username,
+      email: req.body.email,
+      passwordHash: hashedPassword,
+    };
+    const user = await prisma.user.create({
+      data: userObj,
+    });
+    res.json({
+      message: "User registered successfully",
+      token: generateAccessToken(user.email),
     });
   }),
 ];
 
 authController.login = [
-    body("email").trim().normalizeEmail().isEmail().withMessage("Invalid email."),
-  
-    body("password")
+  body("email").trim().normalizeEmail().isEmail().withMessage("Invalid email."),
+
+  body("password")
     .trim()
     .isLength({ min: 6, max: 30 })
     .withMessage("Password must be between 6 and 30 characters long.")
@@ -71,29 +70,31 @@ authController.login = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.json({errors: errors.array()});
+      res.json({ errors: errors.array() });
       return;
-    };
+    }
 
     const email = req.body.email;
     const password = req.body.password;
 
     const user = await prisma.user.findUnique({
-        email: email
-    })
+      where: {
+        email: email,
+      },
+    });
     if (!user) {
-      res.json({message: "User not found"});
+      res.json({ message: "User not found" });
       return;
-    };
+    }
     bcrypt.compare(password, user.passwordHash, (err, result) => {
       if (result) {
         const token = generateAccessToken(user.email);
-        res.json({token: token, message: "Login successful"});
+        res.json({ token: token, message: "Login successful" });
       } else {
-        res.json({message: "Wrong password"});
+        res.json({ message: "Wrong password" });
       }
-    })
-  })
+    });
+  }),
 ];
 
 module.exports = authController;
