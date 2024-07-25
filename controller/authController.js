@@ -80,7 +80,7 @@ authController.login = [
       },
     });
     if (!user) {
-      res.json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
       return;
     }
     bcrypt.compare(password, user.passwordHash, (err, result) => {

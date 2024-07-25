@@ -2,19 +2,21 @@ const passport = require("passport");
 
 const express = require("express");
 const router = express.Router();
+const postController = require("../controller/postController");
 
 /* GET posts. */
-router.get("/", function (req, res, next) {
-  res.send("not implemented yet!");
-});
+router.get("/", postController.getPosts);
+
+
+router.get("/:userid", 
+  passport.authenticate("jwt", { session: false }),
+  postController.getUserPosts);
 
 /* POST posts. */
 router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
-  function (req, res, next) {
-    res.json("authenticated, not implemented yet!");
-  }
+  postController.createPost
 );
 
 /* GET posts/:postid */
