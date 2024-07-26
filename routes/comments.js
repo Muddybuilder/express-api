@@ -1,25 +1,13 @@
 
 var express = require('express');
 var router = express.Router();
+const commentController = require("../controller/commentController")
 
-/* GET comments. */
-router.get('/', function(req, res, next) {
-    res.send('not implemented yet!');
-});
-
-/* POST comments. */
-router.post('/', function(req, res, next) {
-    res.send('not implemented yet!');
-  });
 
 /* GET comments/:commentid */
-router.get('/:commentid', function(req, res, next) {
-    res.send('not implemented yet!');
-  });
+router.get('/:postId', commentController.getComment);
 
-/* PUT comments/:commentid */
-router.get('/:commentid', function(req, res, next) {
-    res.send('not implemented yet!');
-  });
+/* POST comments/:commentid */
+router.post('/:postId', commentController.createComment);
 
 module.exports = router;

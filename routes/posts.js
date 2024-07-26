@@ -7,11 +7,6 @@ const postController = require("../controller/postController");
 /* GET posts. */
 router.get("/", postController.getPosts);
 
-
-router.get("/:userid", 
-  passport.authenticate("jwt", { session: false }),
-  postController.getUserPosts);
-
 /* POST posts. */
 router.post(
   "/",
@@ -20,17 +15,15 @@ router.post(
 );
 
 /* GET posts/:postid */
-router.get("/:postid", function (req, res, next) {
-  res.send("not implemented yet!");
-});
+router.get("/:postId", 
+  postController.getPost
+);
 
 /* PUT posts/:postid */
 router.put(
-  "/:postid",
+  "/:postId",
   passport.authenticate("jwt", { session: false }),
-  function (req, res, next) {
-    res.send("not implemented yet!");
-  }
+  postController.updatePost
 );
 
 module.exports = router;

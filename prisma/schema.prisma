@@ -33,7 +33,6 @@ model Comment {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     content    String
-    published  Boolean  @default(false)
     authorName String   @default("Anonymous")
     post       Post     @relation(fields: [postId], references: [id])
     postId     Int
