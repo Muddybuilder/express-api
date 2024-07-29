@@ -86,9 +86,9 @@ authController.login = [
     bcrypt.compare(password, user.passwordHash, (err, result) => {
       if (result) {
         const token = generateAccessToken(user.email);
-        res.json({ token: token, message: "Login successful" });
+        res.json({ token: token, userName: user.name ,message: "Login successful" });
       } else {
-        res.json({ message: "Wrong password" });
+        res.status(401).json({ message: "Wrong password" });
       }
     });
   }),

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 function generateAccessToken(email) {
-  return jwt.sign({email:email}, process.env.TOKEN_SECRET, { expiresIn: 3600 });
+  return jwt.sign({email:email}, process.env.TOKEN_SECRET, { expiresIn: "30m" });
 }
 
 function authenticateToken(req, res, next) {

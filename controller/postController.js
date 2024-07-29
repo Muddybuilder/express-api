@@ -12,17 +12,25 @@ postController.getPosts = asyncHandler(async (req, res) => {
   res.status(200).json(publishedPosts);
 });
 
+postController.getMyPosts = asyncHandler(async (req, res) => {
+  // read posts from db
+  const user = req.user;
+  const posts = await prisma.post.findMany({
+    where:{
+      authorId:user.id
+    }
+  });
+  res.status(200).json(posts);
+});
 postController.createPost = [
   body("title")
     .trim()
     .isLength({ min: 1 })
-    .withMessage("Title should be at least 1 character long.")
-    .escape(),
+    .withMessage("Title should be at least 1 character long."),
   body("content")
     .trim()
     .isLength({ min: 1, max: 500 })
-    .withMessage("Content should be between 1 to 500 characters long.")
-    .escape(),
+    .withMessage("Content should be between 1 to 500 characters long."),
 
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -73,13 +81,36 @@ postController.getPost = asyncHandler(async (req, res) => {
 
   res.json({ post, comments });
 });
+postController.getMyPost = asyncHandler(async (req, res) => {
+  const user = req.user;
+  const postId = +req.params.postId;
 
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+      authorId:user.id
+
+    },
+  });
+
+  if (!post){
+    res.status(404).json("No post found.");
+    return;
+  }
+
+  const comments = await prisma.comment.findMany({
+    where: {
+      postId: postId,
+    },
+  });
+
+  res.json({ post, comments });
+});
 postController.updatePost = [
   body("title")
     .trim()
     .isLength({ min: 1 })
-    .withMessage("Title should be at least 1 character long.")
-    .escape(),
+    .withMessage("Title should be at least 1 character long."),
   body("content")
     .trim()
     .isLength({ min: 1, max: 500 })

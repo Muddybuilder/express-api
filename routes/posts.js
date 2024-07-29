@@ -18,7 +18,15 @@ router.post(
 router.get("/:postId", 
   postController.getPost
 );
+router.get("/user/myposts/:postId",
+  passport.authenticate("jwt", { session: false }),
+  postController.getMyPost
+)
 
+router.get("/user/myposts",
+  passport.authenticate("jwt", { session: false }),
+  postController.getMyPosts
+)
 /* PUT posts/:postid */
 router.put(
   "/:postId",
