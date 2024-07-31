@@ -67,7 +67,7 @@ authController.login = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.json({ errors: errors.array() });
+      res.status(404).json({ errors: errors.array() });
       return;
     }
 

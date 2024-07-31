@@ -5,10 +5,11 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 var cors = require('cors')
 require('./auth/passport')
-const commentsRouter = require('./routes/comments');
+const privatePostRouter = require('./routes/privatePosts');
 const postRouter = require('./routes/posts')
 const authRouter = require('./routes/auth');
 const indexRouter = require('./routes/index');
+const passport = require('passport');
 require('dotenv').config();
 var app = express();
 
@@ -26,9 +27,10 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN
 }));
 
+
 app.use('/', indexRouter);
 app.use('/api/v1/posts', postRouter);
-app.use('/api/v1/comments', commentsRouter);
+app.use('/api/v1/user/posts', privatePostRouter);
 app.use('/api/v1/auth', authRouter);
 
 // catch 404 and forward to error handler
