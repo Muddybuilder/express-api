@@ -16,7 +16,7 @@ privatePostController.getPosts = asyncHandler(async (req, res) => {
   });
 
   if (!posts) {
-    res.status(404).json("No post found.");
+    res.status(404).json({message:"No post found."});
     return;
   }
   res.status(200).json(posts);
@@ -43,7 +43,6 @@ privatePostController.getPost = asyncHandler(async (req, res) => {
   });
 
   res.json({ post, comments });
-
 });
 
 privatePostController.createPost = [
@@ -111,7 +110,7 @@ privatePostController.updatePost = [
     });
 
     if (!post) {
-      res.status(404).json("No post found.");
+      res.status(404).json({ message: "No post found." });
     }
 
     const postObj = {

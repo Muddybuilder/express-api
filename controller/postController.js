@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const prisma = require("./prismaClient");
 require("dotenv").config();
-const {body, validationResult} = require("express-validator")
+const { body, validationResult } = require("express-validator");
 const postController = {};
 
 postController.getPosts = asyncHandler(async (req, res) => {
@@ -25,7 +25,7 @@ postController.getPost = asyncHandler(async (req, res) => {
   });
 
   if (!post) {
-    res.status(404).json("No post found.");
+    res.status(404).json({message:"No post found."});
     return;
   }
 
@@ -45,11 +45,11 @@ postController.createComment = [
     .withMessage("content shouldn't be empty")
     .isLength({ min: 1, max: 500 })
     .withMessage("content length must be between 1 to 500 letters"),
-  body("authorName").trim(),
+  body("authorName").trim().optional({ nullable: true }),
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(404).json({ errors: errors.array() });
+      res.status(404).json({ message: errors.array() });
       return;
     }
 
@@ -60,24 +60,33 @@ postController.createComment = [
     });
 
     if (!(post && post.published)) {
-      res.status(404).json("No post found.");
+      res.status(404).json({ message: "No post found." });
       return;
     }
-
     const commentObj = {
       createdAt: new Date(),
       updatedAt: new Date(),
       content: req.body.content,
-      authorName: req.body.authorName ? req.body.authorName : null,
+      authorName: req.body?.authorName,
       postId: +req.params.postId,
     };
-    console.log(commentObj)
 
-    await prisma.comment.create({
-      data: commentObj,
-    });
+    if (!req.body.authorName){
+      delete commentObj["authorName"];
+    }
+    console.log(commentObj);
 
-    res.status(201).json("Comment created successfully.");
+    try {
+      await prisma.comment.create({
+        data: commentObj,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error });
+      console.log("ERROR: " + error);
+      throw new Error(error);
+    }
+
+    res.status(201).json({ message: "Comment created successfully." });
   }),
 ];
 

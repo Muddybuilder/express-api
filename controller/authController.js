@@ -24,7 +24,7 @@ authController.register = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.json({ errors: errors.array() });
+      res.status(404).json({ message: errors.array() });
       return;
     }
 
@@ -35,7 +35,7 @@ authController.register = [
     });
 
     if (existingUser) {
-      res.json({ errors: ["user email already exists"] });
+      res.status(404).json({ message: "user email already exists" });
       return;
     }
 
@@ -51,7 +51,7 @@ authController.register = [
     await prisma.user.create({
       data: userObj,
     });
-    res.status(201).json('User created');
+    res.status(201).json({message: "User created"});
   }),
 ];
 
@@ -67,7 +67,7 @@ authController.login = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(404).json({ errors: errors.array() });
+      res.status(404).json({ message: errors.array() });
       return;
     }
 
@@ -86,7 +86,11 @@ authController.login = [
     bcrypt.compare(password, user.passwordHash, (err, result) => {
       if (result) {
         const token = generateAccessToken(user.email);
-        res.json({ token: token, userName: user.name ,message: "Login successful" });
+        res.json({
+          token: token,
+          userName: user.name,
+          message: "Login successful",
+        });
       } else {
         res.status(401).json({ message: "Wrong password" });
       }
